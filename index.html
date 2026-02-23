@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EBADEP-A</title>
+<style>
+  :root{
+    /* TEMA CLARO (padrão) */
+    --bg:#f3f4f6;
+    --card:#ffffff;
+    --line:#e5e7eb;
+    --text:#0f172a;
+    --muted:#6b7280;
+    --pri:#4f46e5;
+    --ok:#16a34a;
+    --err:#b91c1c;
+    --warn:#f59e0b;
+    --surface:#f9fafb;
+    --chip:#eef2ff;
+    --chipHover:#e0e7ff;
+
+    --ok-bg:#ecfdf3;
+    --ok-border:#bbf7d0;
+    --ok-text:#166534;
+    --err-bg:#fef2f2;
+    --err-border:#fecaca;
+    --err-text:#7f1d1d;
+    --warn-bg:#fffbeb;
+    --warn-border:#fef3c7;
+    --warn-text:#92400e;
+  }
+
+  /* TEMA ESCURO */
+  [data-theme="dark"]{
+    --bg:#0e1625;
+    --card:#14213b;
+    --line:#2b3f66;
+    --text:#f8fafc;
+    --muted:#cbd5e1;
+    --pri:#6d28d9;
+    --ok:#10b981;
+    --err:#ef4444;
+    --warn:#f59e0b;
+    --surface:#0b1220;
+    --chip:#0b1220;
+    --chipHover:#0f1a2e;
+
+    --ok-bg:#06351f;
+    --ok-border:#0e6c45;
+    --ok-text:#c8ffe3;
+    --err-bg:#3b0d0d;
+    --err-border:#7f1d1d;
+    --err-text:#ffd5d5;
+    --warn-bg:#3a2903;
+    --warn-border:#885e09;
+    --warn-text:#ffe6b0;
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    transition:background .2s ease,color .2s ease;
+  }
+  .wrap{max-width:1024px;margin:20px auto;padding:0 16px}
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:18px;
+    box-shadow:0 18px 40px rgba(15,23,42,.18);
+  }
+  h1{margin:0 0 6px;font-size:1.45rem}
+  .muted{color:var(--muted)}
+
+  .header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:12px;
+  }
+  .header-main{flex:1 1 auto}
+  .theme-btn{
+    align-self:flex-start;
+    padding:8px 12px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:transparent;
+    color:var(--text);
+    font-size:.85rem;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    white-space:nowrap;
+  }
+  .theme-btn:hover{background:var(--surface)}
+  @media (max-width:640px){
+    .header{flex-direction:column-reverse;align-items:flex-start}
+  }
+
+  .grid-info{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 6px}
+  @media (max-width:720px){.grid-info{grid-template-columns:1fr}}
+  .info{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:12px;
+  }
+  .info b{
+    display:block;
+    margin-bottom:4px;
+    color:var(--muted);
+    font-size:.8rem;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+  }
+
+  /* ===== ITENS ===== */
+  .item{
+    display:grid;
+    grid-template-columns:1.25fr auto 1.25fr;
+    gap:12px;
+    align-items:center;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:12px;
+    background:var(--surface);
+    margin-bottom:12px;
+  }
+  .left{font-size:.98rem}
+  .right{font-size:.98rem;text-align:right}
+  .scale{
+    display:grid;
+    grid-template-columns:repeat(4, 38px);
+    gap:10px;
+    justify-content:center;
+  }
+
+  /* radios estilizados como círculos */
+  .dot{
+    position:relative;
+    width:38px;height:38px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:var(--chip);
+    display:grid;
+    place-items:center;
+    cursor:pointer;
+    transition:transform .05s ease, border-color .15s ease, background .15s ease;
+  }
+  .dot:hover{border-color:#4f70ff;background:var(--chipHover)}
+  .dot input{
+    appearance:none;
+    -webkit-appearance:none;
+    width:0;height:0;
+    position:absolute;
+    opacity:0;
+  }
+  .bullet{
+    width:16px;height:16px;
+    border-radius:999px;
+    border:2px solid #7aa2ff;
+  }
+  .dot input:checked + .bullet{background:#7aa2ff}
+  .dot:focus-within{outline:2px solid #7aa2ff; outline-offset:2px}
+
+  @media (max-width:560px){
+    .item{grid-template-columns:1fr auto 1fr}
+    .left,.right{font-size:.95rem}
+    .scale{grid-template-columns:repeat(4, 34px);gap:8px}
+  }
+
+  .legend{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 12px}
+  .pill{
+    display:inline-block;
+    padding:4px 8px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:rgba(0,0,0,.02);
+    font-size:.86rem;
+  }
+
+  /* Ações */
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    background:var(--pri);
+    border:none;
+    color:#fff;
+    padding:12px 16px;
+    border-radius:12px;
+    cursor:pointer;
+    font-weight:600;
+  }
+  .btn.ok{background:var(--ok)}
+  .btn.ghost{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--muted);
+  }
+  .btn:disabled{opacity:.6;cursor:not-allowed}
+
+  /* Mensagens */
+  .msg{margin:12px 0;padding:12px;border-radius:10px;font-size:.9rem}
+  .okbox{
+    background:var(--ok-bg);
+    border:1px solid var(--ok-border);
+    color:var(--ok-text);
+  }
+  .errbox{
+    background:var(--err-bg);
+    border:1px solid var(--err-border);
+    color:var(--err-text);
+  }
+  .warnbox{
+    background:var(--warn-bg);
+    border:1px solid var(--warn-border);
+    color:var(--warn-text);
+  }
+
+  /* Progresso */
+  .progress{
+    height:10px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:999px;
+    overflow:hidden;
+  }
+  .bar{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg, var(--pri), var(--ok));
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="header">
+      <div class="header-main">
+        <h1>EBADEP-A</h1>
+        <p class="muted">
+          Responda pensando nas <b>últimas duas semanas, incluindo hoje</b>. Em cada linha há duas frases opostas.
+          Marque um dos quatro círculos entre elas, indicando onde você se encontra no momento.
+        </p>
+      </div>
+      <button id="themeToggle" class="theme-btn" type="button">🌙 Modo escuro</button>
+    </div>
+
+    <div class="legend">
+      <span class="pill">Mais próximo da frase da esquerda</span>
+      <span class="pill">Leve tendência à esquerda</span>
+      <span class="pill">Leve tendência à direita</span>
+      <span class="pill">Mais próximo da frase da direita</span>
+    </div>
+
+    <div id="pacInfo" class="grid-info" style="display:none;"></div>
+
+    <div id="progressWrap" style="display:none; gap:8px; align-items:center; margin:8px 0 0;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px">
+        <span class="muted" id="progressText">Progresso: 0/45</span>
+        <button id="clearDraft" class="btn ghost" type="button" title="Limpar rascunho local">Limpar rascunho</button>
+      </div>
+      <div class="progress"><div class="bar" id="bar"></div></div>
+    </div>
+
+    <form id="form" style="margin-top:14px; display:none;" novalidate>
+      <div id="qs"></div>
+      <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+        <button id="btnSubmit" class="btn ok" type="submit">Enviar respostas</button>
+        <button id="btnSave" class="btn ghost" type="button" title="Salvar rascunho">Salvar rascunho</button>
+      </div>
+      <div id="msg" class="msg" style="display:none" role="alert" aria-live="polite"></div>
+    </form>
+
+    <div id="alert" class="msg" style="display:none" role="alert" aria-live="assertive"></div>
+  </div>
+</div>
+
+<!-- Supabase JS (mesma lib que você usa no portal) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+/* ==========================
+   CONFIG (SUPABASE)
+   ========================== */
+// Use os MESMOS valores do seu app.js do portal.
+const SUPABASE_URL = "https://ydypdeafbcdcamwigjuq.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_lg9teAniku65cd2dnZJvIQ_Zii0XneZ";
+
+const CODE = "EBADEP_A_V2";
+const SOURCE = (new URLSearchParams(location.search).get("source") || "paciente").toLowerCase();
+
+// Para voltar ao portal/área do paciente
+const PORTAL_URL = "https://integradaneuropsicologia.github.io/formularios/";
+
+function getSupabaseClient(){
+  const g = window.supabase;
+  const createClient = g?.createClient || g?.default?.createClient;
+  if(!createClient) throw new Error("Supabase não carregou.");
+  if(!SUPABASE_URL || !SUPABASE_ANON_KEY) throw new Error("Falta configurar SUPABASE_URL / SUPABASE_ANON_KEY.");
+  return createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}
+
+/* ===== TEMA CLARO/ESCURO ===== */
+const THEME_KEY = "EBADEP_A_V2_theme";
+function applyTheme(theme){
+  document.documentElement.setAttribute("data-theme", theme);
+  const btn = document.getElementById("themeToggle");
+  if(btn) btn.textContent = theme === "dark" ? "☀️ Modo claro" : "🌙 Modo escuro";
+}
+function initTheme(){
+  let theme = "light";
+  try{
+    const saved = localStorage.getItem(THEME_KEY);
+    if(saved === "dark" || saved === "light") theme = saved;
+  }catch(_){ }
+  applyTheme(theme);
+  const btn = document.getElementById("themeToggle");
+  if(btn){
+    btn.addEventListener("click", ()=>{
+      const cur = document.documentElement.getAttribute("data-theme") || "light";
+      const next = cur === "dark" ? "light" : "dark";
+      applyTheme(next);
+      try{ localStorage.setItem(THEME_KEY, next); }catch(_){ }
+    });
+  }
+}
+if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", initTheme);
+else initTheme();
+
+/* ===== HELPERS ===== */
+const $ = s => document.querySelector(s);
+const onlyDigits = s => (s||"").replace(/\D+/g, "");
+const qs = k => new URLSearchParams(location.search).get(k) || "";
+
+function setBox(id, text, kind="ok"){
+  const el = $(id); if(!el) return;
+  el.textContent = text;
+  el.className = "msg " + (kind==="ok"?"okbox":kind==="warn"?"warnbox":"errbox");
+  el.style.display = "block";
+}
+function hideBox(id){
+  const el=$(id); if(el){ el.style.display="none"; el.textContent=""; }
+}
+function maskCPF(cpf){
+  const d = onlyDigits(cpf||"");
+  if(d.length!==11) return cpf||"";
+  return `${d.slice(0,3)}.${d.slice(3,6)}.${d.slice(6,9)}-${d.slice(9)}`;
+}
+function fmtDateISO(iso){
+  if(!iso) return "";
+  const [y,m,d] = String(iso).split("-");
+  return (y&&m&&d) ? `${d}/${m}/${y}` : String(iso);
+}
+function goPortalWithCpf(cpf){
+  try{
+    const u = new URL(PORTAL_URL, location.href);
+    u.searchParams.set("cpf", cpf);
+    location.href = u.toString();
+  }catch(_){
+    const sep = PORTAL_URL.includes("?") ? "&" : "?";
+    location.href = PORTAL_URL + sep + "cpf=" + encodeURIComponent(cpf);
+  }
+}
+
+function normalizeCode(code){
+  return String(code||"").trim().toUpperCase();
+}
+function boolLike(v){
+  if(typeof v === "boolean") return v;
+  if(typeof v === "number") return v !== 0;
+  const s = String(v ?? "").trim().toLowerCase();
+  return s === "sim" || s === "s" || s === "true" || s === "1" || s === "yes";
+}
+// Aceita jsonb/jsonb[] como: ["BAI"], [{code:"BAI"}], {"BAI": true}, etc.
+function jsonbToCodeSet(jsonb){
+  const out = new Set();
+  if(!jsonb) return out;
+  const push = (c)=>{ const cc = normalizeCode(c); if(cc) out.add(cc); };
+
+  if(Array.isArray(jsonb)){
+    for(const it of jsonb){
+      if(typeof it === "string") push(it);
+      else if(it && typeof it === "object") push(it.code || it.test || it.teste || it.form || it.formulario);
+    }
+    return out;
+  }
+
+  if(typeof jsonb === "object"){
+    for(const [k,v] of Object.entries(jsonb)){
+      if(boolLike(v) || (v && typeof v === "object")) push(k);
+    }
+    return out;
+  }
+
+  const s = String(jsonb);
+  s.split(/[;,\s]+/g).map(x=>x.trim()).filter(Boolean).forEach(push);
+  return out;
+}
+
+/* ===== ITENS (45) ===== */
+const ITEMS = [
+  {left:"Não tenho vontade de chorar.", right:"Tenho sentido vontade de chorar."},
+  {left:"Tenho me sentido muito bem.", right:"Tenho estado mais angustiado(a)."},
+  {left:"Consigo realizar tarefas.", right:"Sinto-me mais impotente para realizar tarefas."},
+  {left:"Resolvo meus problemas.", right:"Sinto-me menos capaz para enfrentar meus problemas."},
+  {left:"Faço coisas que gosto.", right:"Não tenho mais vontade de fazer coisas que gostava."},
+  {left:"Não tenho chorado.", right:"Tenho chorado."},
+  {left:"Não sinto solidão.", right:"Sinto-me cada vez mais sozinho(a)."},
+  {left:"Sei me comportar nas situações.", right:"Não sei mais como agir."},
+  {left:"Consigo me virar sozinho(a).", right:"Não consigo mais me virar sozinho(a)."},
+  {left:"O futuro será melhor.", right:"Não acredito que as coisas melhorem."},
+  {left:"Minhas atitudes me parecem normais.", right:"Acho minhas atitudes menos adequadas do que antes."},
+  {left:"Faço planos para o futuro.", right:"Não consigo planejar meu futuro."},
+  {left:"Acredito em mim.", right:"Estou acreditando menos em mim."},
+  {left:"Não tenho problemas para decidir.", right:"Está mais difícil decidir."},
+  {left:"Escolho com facilidade.", right:"Não consigo mais escolher sozinho(a)."},
+  {left:"Consigo fazer minhas tarefas sem ajuda.", right:"Estou precisando de ajuda para realizar meus trabalhos."},
+  {left:"Sinto prazer em realizar minhas atividades.", right:"As coisas não me agradam como antigamente."},
+  {left:"Sinto-me feliz com minha vida.", right:"Antes eu era mais feliz."},
+  {left:"Acredito que as coisas estão indo bem na minha vida.", right:"Acredito que atualmente nada vai bem."},
+  {left:"Faço coisas que ajudam os outros.", right:"As coisas que faço não ajudam a mais ninguém."},
+  {left:"Estar com pessoas é bom.", right:"Comecei a inventar desculpas para não me encontrar com as pessoas."},
+  {left:"Compareço a festas e reuniões quando sou convidado(a).", right:"Tenho evitado festas e reuniões, mesmo convidado(a)."},
+  {left:"Consigo me concentrar nas minhas atividades.", right:"Não consigo mais me concentrar."},
+  {left:"Tenho realizado minhas tarefas normalmente.", right:"Estou mais lento(a) para realizar minhas tarefas."},
+  {left:"Tenho realizado minhas tarefas normalmente.", right:"Estou me sentindo mais agitado(a) do que antes."},
+  {left:"Sempre achei minha vida boa.", right:"Hoje acho que meu passado não foi bom."},
+  {left:"Sinto-me disposto(a).", right:"Logo pela manhã me sinto esgotado(a)."},
+  {left:"Minha vida é boa.", right:"Minha vida está cada vez pior."},
+  {left:"Morrer não é a solução para problemas.", right:"Tenho pensado que seria melhor estar morto(a)."},
+  {left:"Acredito em mim.", right:"Não acredito mais em mim."},
+  {left:"Durmo bem.", right:"Não consigo mais dormir a noite inteira."},
+  {left:"Faço normalmente o que é necessário.", right:"Não consigo mais fazer o necessário."},
+  {left:"Gosto muito da minha vida.", right:"Não dou mais valor à minha vida."},
+  {left:"Gosto de mim.", right:"Não gosto mais de mim."},
+  {left:"Termino minhas tarefas.", right:"Não termino mais minhas tarefas."},
+  {left:"Estou tranquilo(a).", right:"Perco a paciência por muito pouco."},
+  {left:"Não venho me sentindo nervoso(a).", right:"Qualquer coisa me deixa nervoso(a)."},
+  {left:"Sinto-me com disposição.", right:"Ando mais cansado(a)."},
+  {left:"Sinto-me disposto(a).", right:"Não tenho mais vontade de fazer as coisas."},
+  {left:"Durmo normalmente.", right:"Tenho dormido muito."},
+  {left:"Minha fome continua como sempre.", right:"Tenho comido menos."},
+  {left:"Tenho desejo sexual como antes.", right:"Meu desejo sexual vem diminuindo muito."},
+  {left:"Meu peso continua o mesmo.", right:"Tenho emagrecido sem fazer regime."},
+  {left:"Tomo remédio apenas quando preciso.", right:"Gosto de tomar remédio por precaução."},
+  {left:"Não costumo sentir culpa.", right:"Venho me sentindo culpado(a) pelos problemas."}
+];
+
+const SCALE_LABELS = [
+  "Mais próximo da frase da esquerda",
+  "Leve tendência à esquerda",
+  "Leve tendência à direita",
+  "Mais próximo da frase da direita"
+];
+function getScaleLabel(v){ return SCALE_LABELS[v] || String(v); }
+
+/* ===== RENDER ===== */
+function renderQuestions(){
+  const host = $("#qs");
+  host.innerHTML = "";
+  ITEMS.forEach((it, idx)=>{
+    const q = idx+1, qn = String(q).padStart(2, "0");
+    const row = document.createElement("div");
+    row.className = "item";
+    row.setAttribute("data-q", String(q));
+
+    const left = document.createElement("div");
+    left.className = "left";
+    left.id = `l${qn}`;
+    left.textContent = `${q}. ${it.left}`;
+
+    const mid = document.createElement("div");
+    mid.className = "scale";
+
+    for(let val=0; val<=3; val++){
+      const lab = document.createElement("label");
+      lab.className = "dot";
+      lab.setAttribute("title", getScaleLabel(val));
+      const id = `q${qn}_${val}`;
+      lab.innerHTML = `
+        <input type="radio" name="q${qn}" id="${id}" value="${val}" required aria-labelledby="l${qn} r${qn}">
+        <span class="bullet"></span>
+      `;
+      mid.appendChild(lab);
+    }
+
+    const right = document.createElement("div");
+    right.className = "right";
+    right.id = `r${qn}`;
+    right.textContent = it.right;
+
+    row.append(left, mid, right);
+    host.appendChild(row);
+  });
+}
+
+/* ===== ESTADO ===== */
+let patient = null;
+let CPF = "";
+let startAt = Date.now();
+let STORAGE_KEY = "";
+const sb = getSupabaseClient();
+
+/* ===== PROGRESSO ===== */
+function countAnswered(){
+  let c=0;
+  for(let i=1;i<=ITEMS.length;i++){
+    const qn=String(i).padStart(2,'0');
+    if(document.querySelector(`input[name="q${qn}"]:checked`)) c++;
+  }
+  return c;
+}
+function updateProgress(){
+  const answered = countAnswered();
+  const total = ITEMS.length;
+  const txt = $("#progressText");
+  const bar = $("#bar");
+  if(txt) txt.textContent = `Progresso: ${answered}/${total}`;
+  if(bar) bar.style.width = `${(answered/total)*100}%`;
+}
+
+/* ===== RASCUNHO LOCAL ===== */
+function saveDraft(){
+  const data = {};
+  for(let i=1;i<=ITEMS.length;i++){
+    const qn = String(i).padStart(2,"0");
+    const sel = document.querySelector(`input[name="q${qn}"]:checked`);
+    if(sel) data[`q${qn}`] = Number(sel.value);
+  }
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }catch(e){ console.warn("Sem espaço para salvar rascunho"); }
+}
+function restoreDraft(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    const data = JSON.parse(raw);
+    for(const [k,v] of Object.entries(data||{})){
+      const el = document.querySelector(`input[name="${k}"][value="${v}"]`);
+      if(el) el.checked = true;
+    }
+  }catch(e){ }
+}
+function clearDraft(){ try{ localStorage.removeItem(STORAGE_KEY); }catch(_){ } }
+
+/* ===== COLETORES PARA RESULTS ===== */
+function collectAnswersMap(){
+  const ans = {};
+  for(let i=1;i<=ITEMS.length;i++){
+    const qn = String(i).padStart(2,"0");
+    const sel = document.querySelector(`input[name="q${qn}"]:checked`);
+    ans[qn] = sel ? Number(sel.value) : null;
+  }
+  return ans;
+}
+function collectQuestionsReadable(){
+  const obj = {};
+  for(let i=1;i<=ITEMS.length;i++){
+    const qn = String(i).padStart(2,"0");
+    const item = ITEMS[i-1];
+    const sel = document.querySelector(`input[name="q${qn}"]:checked`);
+    const val = sel ? Number(sel.value) : null;
+    obj[qn] = {
+      left: item.left,
+      right: item.right,
+      value: val,
+      label: val === null ? "" : getScaleLabel(val)
+    };
+  }
+  return obj;
+}
+
+function renderPatientInfo(){
+  const g = $("#pacInfo");
+  g.innerHTML = "";
+  const info = [
+    ["Nome", patient?.nome || "-"],
+    ["CPF", maskCPF(patient?.cpf || CPF)],
+    ["Nascimento", fmtDateISO(patient?.data_nascimento)],
+    ["E-mail", patient?.email || "-"],
+    ["WhatsApp", patient?.whatsapp || "-"]
+  ];
+  for(const [k,v] of info){
+    const div = document.createElement("div");
+    div.className = "info";
+    div.innerHTML = `<b>${k}</b><div>${v||"-"}</div>`;
+    g.appendChild(div);
+  }
+}
+
+async function isAlreadySubmitted(){
+  // 1) checa na tabela respostas
+  const { data, error } = await sb
+    .from("respostas")
+    .select("cpf")
+    .eq("cpf", CPF)
+    .eq("code", CODE)
+    .limit(1);
+  if (error) {
+    // se a policy bloquear o SELECT, a gente ainda consegue tentar INSERT e tratar erro depois.
+    return false;
+  }
+  return !!(data && data.length);
+}
+
+/* ===== BOOT: AGORA POR CPF ===== */
+(async function boot(){
+  try{
+    CPF = onlyDigits(qs("cpf"));
+    if(!CPF || CPF.length !== 11){
+      setBox("#alert", "Link inválido (sem CPF). Abra o formulário com ?cpf=SEUCPF", "err");
+      return;
+    }
+
+    // carrega paciente
+    const { data: p, error: pe } = await sb
+      .from("patients")
+      .select("cpf, nome, email, whatsapp, data_nascimento, tests_liberados, tests_feitos")
+      .eq("cpf", CPF)
+      .maybeSingle();
+
+    if(pe) throw new Error("Falha ao buscar paciente no Supabase.");
+    if(!p) throw new Error("Paciente não encontrado.");
+    patient = p;
+
+    // checa liberação
+    const liberados = jsonbToCodeSet(patient.tests_liberados);
+    if(!liberados.has(normalizeCode(CODE))){
+      setBox("#alert", "Este formulário não está liberado para você.", "err");
+      return;
+    }
+
+    // checa se já foi respondido
+    const feitos = jsonbToCodeSet(patient.tests_feitos);
+    const already = feitos.has(normalizeCode(CODE)) || (await isAlreadySubmitted());
+    if(already){
+      setBox("#alert", "Você já respondeu este formulário. Voltando ao portal…", "ok");
+      setTimeout(()=>goPortalWithCpf(CPF), 1200);
+      return;
+    }
+
+    // Render
+    renderPatientInfo();
+    renderQuestions();
+
+    STORAGE_KEY = `EBADEP_A_V2_${CPF}`;
+    restoreDraft();
+    updateProgress();
+
+    $("#pacInfo").style.display = "grid";
+    $("#form").style.display = "block";
+    $("#progressWrap").style.display = "block";
+    hideBox("#alert");
+
+    startAt = Date.now();
+
+    // Dev check
+    if(ITEMS.length !== 45) console.warn(`ITEMS possui ${ITEMS.length} itens, esperado 45.`);
+
+  }catch(err){
+    console.error(err);
+    setBox("#alert", err.message || "Falha ao abrir o formulário. Tente novamente.", "err");
+  }
+})();
+
+/* ===== EVENTOS DE UI ===== */
+addEventListener("change", (e)=>{
+  if(e.target && e.target.matches('input[type="radio"][name^="q"]')){
+    saveDraft();
+    updateProgress();
+  }
+});
+$("#btnSave").addEventListener("click", ()=>{
+  saveDraft();
+  setBox("#msg", "Rascunho salvo neste dispositivo.", "ok");
+});
+$("#clearDraft").addEventListener("click", ()=>{
+  clearDraft();
+  setBox("#msg", "Rascunho apagado.", "warn");
+});
+
+/* ===== SUBMIT ===== */
+let sending = false;
+$("#form").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  if(sending) return;
+  sending = true;
+  hideBox("#msg");
+
+  const btn = $("#btnSubmit");
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Enviando…";
+
+  try{
+    if(!patient) throw new Error("Sessão inválida. Reabra o link.");
+
+    // validação
+    const missing = [];
+    let firstMissingRow = null;
+
+    for(let i=1;i<=ITEMS.length;i++){
+      const qn = String(i).padStart(2, "0");
+      const sel = document.querySelector(`input[name="q${qn}"]:checked`);
+      if(!sel){
+        missing.push(i);
+        if(!firstMissingRow){
+          const row = document.querySelector(`.item[data-q="${i}"]`);
+          if(row) firstMissingRow = row;
+        }
+      }
+    }
+
+    if(missing.length){
+      if(firstMissingRow) firstMissingRow.scrollIntoView({behavior:"smooth", block:"center"});
+      throw new Error(`Você ainda não respondeu os itens: ${missing.join(", ")}.`);
+    }
+
+    // score total
+    let total = 0;
+    for(let i=1;i<=ITEMS.length;i++){
+      const qn = String(i).padStart(2, "0");
+      const sel = document.querySelector(`input[name="q${qn}"]:checked`);
+      total += Number(sel.value);
+    }
+
+    const answersMap = collectAnswersMap();
+    const questionsReadable = collectQuestionsReadable();
+    const durationSec = Math.round((Date.now() - startAt)/1000);
+
+    // "respostas unidas" -> tudo num JSON só
+    const results = {
+      test: CODE,
+      source: SOURCE,
+      total
+    };
+
+    // insere no Supabase: tabela respostas
+    const payload = {
+      cpf: CPF,
+      code: CODE,
+      submitted_at: new Date().toISOString(),
+      results
+    };
+
+    const { error: insErr } = await sb.from("respostas").insert(payload);
+    if(insErr){
+      // Se você criar UNIQUE (cpf, code), aqui cai como duplicado (23505)
+      const msg = (insErr.code === "23505")
+        ? "Este formulário já foi enviado anteriormente."
+        : "Falha ao enviar para o Supabase.";
+      throw new Error(msg);
+    }
+
+    // (Opcional) marca como feito no paciente — só se sua policy permitir.
+    // Se der erro, não bloqueia o envio.
+    try{
+      const feitos = jsonbToCodeSet(patient.tests_feitos);
+      feitos.add(normalizeCode(CODE));
+      const next = Array.from(feitos);
+      const { error: upErr } = await sb.from("patients").update({ tests_feitos: next }).eq("cpf", CPF);
+      if(!upErr) patient.tests_feitos = next;
+    }catch(_){ }
+
+    clearDraft();
+    setBox("#msg", "Formulário enviado. Voltando ao portal…", "ok");
+    setTimeout(()=>goPortalWithCpf(CPF), 1100);
+
+  }catch(err){
+    console.error(err);
+    setBox("#msg", err.message || "Falha ao enviar. Tente novamente.", "err");
+    sending = false;
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+});
+</script>
+</body>
+</html>
