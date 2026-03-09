@@ -936,24 +936,7 @@
           code: testCode,
           submitted_at: submittedAt,
           results: "",
-          results_meta: [
-            ...resultsMetaPayload,
-            {
-              key: "categoria",
-              label: "Categoria",
-              value: ""
-            },
-            {
-              key: "source",
-              label: "Origem",
-              value: "paciente"
-            },
-            {
-              key: "total_bruto",
-              label: "Total bruto",
-              value: total
-            }
-          ]
+          results_meta: total
         }]);
 
       if(insertError){
