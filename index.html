@@ -767,7 +767,7 @@
 
     QUALITATIVE_CATEGORIES.forEach((category) => {
       const value = category.items.reduce((sum, itemNumber) => {
-        const itemValue = answersMap[String(itemNumber)];
+        const itemValue = answersMap[`q${String(itemNumber).padStart(2, "0")}`];
         return sum + (itemValue === null || itemValue === undefined ? 0 : Number(itemValue));
       }, 0);
 
