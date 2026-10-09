@@ -376,7 +376,7 @@
     { key: "sociais", label: "Categoria qualitativa - Sociais", items: [8, 9, 16, 20, 21, 22, 32, 35] },
     { key: "humor", label: "Categoria qualitativa - Humor", items: [1, 2, 5, 6, 7, 17, 18, 33, 34] },
     { key: "cognitivos", label: "Categoria qualitativa - Cognitivos", items: [3, 4, 10, 11, 12, 13, 14, 15, 19, 23, 26, 28, 29, 30, 45] },
-    { key: "vegetativos_somaticos", label: "Categoria qualitativa - Vegetativos/somaticos", items: [27, 31, 38, 39, 40, 41, 42, 43] },
+    { key: "vegetativos_somaticos", label: "Categoria qualitativa - Vegetativos/somáticos", items: [27, 31, 38, 39, 40, 41, 42, 43] },
     { key: "motores", label: "Categoria qualitativa - Motores", items: [24, 25] },
     { key: "irritabilidade", label: "Categoria qualitativa - Irritabilidade", items: [36, 37] },
     { key: "ansiedade", label: "Categoria qualitativa - Ansiedade", items: [44] }
@@ -757,11 +757,17 @@
     const values = Object.values(answersMap).filter(v => v !== null).map(Number);
     const total = values.reduce((a,b) => a + b, 0);
 
+    const item29 = answersMap.q29;
     const payload = [
       {
         key: "total",
-        label: "Total",
+        label: "Pontuação total EBADEP-A",
         value: total
+      },
+      {
+        key: "item_29_ideacao_suicida",
+        label: "Item 29 - Ideação suicida",
+        value: item29 === null || item29 === undefined ? null : Number(item29)
       }
     ];
 
@@ -778,7 +784,7 @@
       });
     });
 
-    return payload;
+    return payload.map((entry, index) => ({ order: index + 1, ...entry }));
   }
 
     async function getPatientFormAccessByToken() {
